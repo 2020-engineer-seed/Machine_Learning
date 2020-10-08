@@ -10,5 +10,11 @@ url = 'https://github.com/2020-engineer-seed/datasets/blob/master/Dataset_learn_
 # データセットをロード
 dataframe = pd.read_csv(url)
 
-# 標準化器を作成
+# 標準化器・推定器オブジェクトを作成
 starndardizer = StandardScaler()
+
+#学習
+
+#テストデータに対して予測
+
+#評価
