@@ -8,6 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
+import xgboost as xgb
 
 # データのロード
 data1 = pd.read_csv('Dataset_learn_2.csv')  # learn_1
@@ -20,7 +21,7 @@ tr = data1.pivot_table(values='RSSI',
                        index=data1[['SerialNumber', 'Latitude', 'Longitude']],
                        columns='APName')
 m1 = tr.mean().astype('int64')
-tr = tr.fillna(m1)
+#tr = tr.fillna(m1)
 tr['Latitude'] = tr.index.get_level_values('Latitude')
 tr['Longitude'] = tr.index.get_level_values('Longitude')
 # ------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ te1 = data2.pivot_table(values='RSSI',
                         index=data2[['SerialNumber', 'Latitude', 'Longitude']],
                         columns='APName')
 m2 = te1.mean().astype('int64')
-te1 = te1.fillna(m2)
+#te1 = te1.fillna(m2)
 te1['Latitude'] = te1.index.get_level_values('Latitude')
 te1['Longitude'] = te1.index.get_level_values('Longitude')
 # ------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ te2 = data3.pivot_table(values='RSSI',
                         index=data3[['SerialNumber', 'Latitude', 'Longitude']],
                         columns='APName')
 m3 = te2.mean().astype('int64')
-te2 = te2.fillna(m3)
+#te2 = te2.fillna(m3)
 te2['Latitude'] = te2.index.get_level_values('Latitude')
 te2['Longitude'] = te2.index.get_level_values('Longitude')
 # ------------------------------------------------------------------------------
@@ -56,10 +57,22 @@ X_train = sc.transform(X_train)
 X_test1 = sc.transform(X_test1)
 X_test2 = sc.transform(X_test2)
 
+Y_train = np.reshape(Y_train, -1)
+
+print(X_train)
+
 # 勾配ブースティング
-gbr = MultiOutputRegressor(GradientBoostingRegressor(subsample=0.5,
-                                                     min_samples_split=4,
-                                                     n_estimators=80))
+#gbr = MultiOutputRegressor(GradientBoostingRegressor(subsample=0.5,
+#                                                     min_samples_split=4,
+#                                                     n_estimators=80))
+#gbr.fit(X_train, Y_train)
+
+gbr = xgb.XGBClassifier(
+    objective='reg:squarederror',
+    subsample=0.5,
+    n_estimators=80
+)
+
 gbr.fit(X_train, Y_train)
 
 # 精度の検証(交差検証)
